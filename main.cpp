@@ -1,26 +1,27 @@
 #include <iostream>
+#include <chrono>
 
-#define ascii_a 97
-#define ascii_z 122
+#define start_symbol 48
+#define end_symbol 122
 
 unsigned int charIndex = 0;
 unsigned int tempIndex = 0;
 
 void changeInDepth(char* ch)
 {
-    if((int)ch[tempIndex] == ascii_z)
+    if((int)ch[tempIndex] == end_symbol)
     {
         if(tempIndex == 0)
         {
-            ch[charIndex] = ascii_a;
+            ch[charIndex] = start_symbol;
             charIndex++;
-            ch[tempIndex] = ascii_a;
-            ch[charIndex] = ascii_a;
+            ch[tempIndex] = start_symbol;
+            ch[charIndex] = start_symbol;
             ch[charIndex+1] = '\0';
         }
         else
         {
-            ch[tempIndex] = ascii_a;
+            ch[tempIndex] = start_symbol;
             tempIndex--;
             changeInDepth(ch);
         }
@@ -36,25 +37,23 @@ int main()
     std::string password;
     std::cout << "Enter password:\n";
     std::cin >> password;
-
-    const int iterationCount = 100000;
+    system("cls");
     
     char* ch = new char[64];
+    auto start_time = std::chrono::steady_clock::now();
 
-    system("cls");
-
-    for (int k = 0; k < iterationCount; k++)
+    while (strcmp(ch, password.c_str()) != 0)
     {
-        for (int i = ascii_a; i <= ascii_z; i++)
+        for (int i = start_symbol; i <= end_symbol; i++)
         {
             ch[charIndex] = i;
             std::cout << ch << "\r";
             if(strcmp(ch, password.c_str()) == 0)
             {
-                std::cout << std::endl << 
-                "----------------" << std::endl << 
-                "Password found: " << ch << " iterations: " << k << std::endl << 
-                "----------------" << std::endl;
+                std::cout << std::endl << "Password found: " << ch << std::endl;
+                auto end_time = std::chrono::steady_clock::now();
+                auto elapsed_ns = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
+                std::cout << std::endl << "Elapsed Time: " << elapsed_ns.count() << " s\n";
                 return 0;
             }
         }
@@ -62,7 +61,6 @@ int main()
             tempIndex = charIndex-1;
         changeInDepth(ch);
     }
-    std::cout << std::endl << "Password not found" << std::endl;
 
     return 0;
 }
